@@ -104,11 +104,7 @@ export async function getStaticProps() {
           name
           price
           slug
-          image {
-            url
-            width
-            height
-          }
+          image
         }
       }
     `
