@@ -1,5 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link';
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql
+} from '@apollo/client';
 
 import Layout from '@components/Layout';
 import Container from '@components/Container';
@@ -9,7 +14,10 @@ import products from '@data/products';
 
 import styles from '@styles/Page.module.scss'
 
-export default function Home() {
+export default function Home({ home }) {
+  
+  const { heroTitle, heroText, heroLink, heroBackground } = home;
+
   return (
     <Layout>
       <Head>
@@ -21,13 +29,18 @@ export default function Home() {
         <h1 className="sr-only">Space Jelly Gear</h1>
 
         <div className={styles.hero}>
-          <Link href="#">
+          <Link href={heroLink}>
             <a>
               <div className={styles.heroContent}>
-                <h2>Prepare for liftoff.</h2>
-                <p>Apparel that&apos;s out of this world!</p>
+                <h2>{heroTitle}</h2>
+                <p>{heroText}</p>
               </div>
-              <img className={styles.heroImage} src="/images/space-jelly-gear-banner.jpg" alt="" />
+              <img 
+                className={styles.heroImage} 
+                src={heroBackground.url} 
+                width={heroBackground.width}
+                height={heroBackground.height}
+                alt="" />
             </a>
           </Link>
         </div>
@@ -63,4 +76,39 @@ export default function Home() {
       </Container>
     </Layout>
   )
+}
+
+export async function getStaticProps() {
+  const client = new ApolloClient({
+    uri: 'https://api-eu-central-1.graphcms.com/v2/cl2ni4nv32r1f01z4g0743xmd/master',
+    cache: new InMemoryCache()
+  })
+
+  const data = await client.query({
+    query: gql`
+      query PageHome {
+        page(where: {slug: "home"}) {
+          heroLink
+          heroText
+          heroTitle
+          id
+          name
+          slug
+          heroBackground {
+            width
+            url
+            height
+          }
+        }
+      }
+    `
+  })
+
+  const home = data.data.page;
+
+  return {
+    props: {
+      home
+    }
+  }
 }
