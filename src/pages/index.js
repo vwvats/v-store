@@ -51,7 +51,7 @@ export default function Home({ home, products }) {
           {products.map(product => {
             return (
               <li key={product.id}>
-                <Link href={product.slug}>
+                <Link href={`products/${product.slug}`}>
                   <a>
                     <div className={styles.productImage}>
                       <img width={product.image.width} height={product.image.height} src={product.image.url} alt="" />
@@ -65,7 +65,14 @@ export default function Home({ home, products }) {
                   </a>
                 </Link>
                 <p>
-                  <Button>
+                  <Button
+                    className="snipcart-add-item"
+                    data-item-id={product.id}
+                    data-item-price={product.price}
+                    data-item-url={`products/${product.slug}`}
+                    data-item-image={product.image.url}
+                    data-item-name={product.name}
+                  >
                     Add to Cart
                   </Button>
                 </p>
@@ -97,6 +104,7 @@ export async function getStaticProps() {
           heroBackground
         }
         products(first: 4) {
+          id
           name
           price
           slug
